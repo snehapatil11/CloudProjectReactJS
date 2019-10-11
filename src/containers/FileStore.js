@@ -5,8 +5,7 @@ import "react-table/react-table.css";
 import "./FileStore.css";
 import cognitoUtils from '../Utilities/CognitoDetails'
 import appconfig from '../Config/appconfig'
-
-const uuidv4 = require('uuid/v4');
+import { fileServices } from '../services/fileServices'
 
 class FileStore extends Component {
 
@@ -25,10 +24,6 @@ class FileStore extends Component {
     }    
     handleSubmit = async event => {
         event.preventDefault();
-        // S3FileUpload
-        //     .uploadFile(this.file, config)
-        //     .then(data => console.log(data))
-        //     .catch(err => console.error(err))
         this.s3fileupload();
     }
     handleChange = event => {
@@ -36,68 +31,8 @@ class FileStore extends Component {
             [event.target.id]: event.target.value
         });
     }
-
-    
-
-    s3fileupload(){
-        const formData = new FormData();
-        formData.append('file', this.file);
-        const options = {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        delete options.headers['Content-Type'];
-
-        fetch('http://localhost:4001/api/fileupload', options)
-        .then(response => {
-            return response.json();
-          }).then(jsonResponse => {
-            console.log(jsonResponse.imageUrl);
-            this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName);
-          }).catch (error => {
-            console.log(error)
-          })
-    }
-    getFilesData() {
-        fetch("http://localhost:4001/users")
-        .then(response => response.json().then(filesdata =>{            
-            this.setState({filesdata: filesdata})
-            }));
-    }
-    
-    storefiledata(imageurl, filename){
-        const url="http://localhost:4001/postusers";
-        fetch(url, {
-            method: 'Post',
-            body: JSON.stringify({
-                "Id": uuidv4(),
-                "Email": "SnehaOnkar",
-                "FileName":filename,
-                "FileDescription":this.state.description,
-                "CreatedAt":new Date().toDateString() + " " + new Date().toLocaleTimeString(),
-                "UpdatedAt":new Date().toDateString() + " " + new Date().toLocaleTimeString(),
-                "Imageurl": imageurl,
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-              }
-        }).then(response => {
-            console.log(response);
-            this.getFilesData();
-            this.setState({
-                file: null,
-                description: ""
-            })
-        });
-    }
-    
     componentDidMount(){
-
         this.props.userHasLoggedIn(true);
-
         var curUrl = window.location.href;
         cognitoUtils.parseCognitoWebResponse(curUrl).then((result) => {
             console.log("web response ::",result); // "Stuff worked!"
@@ -117,6 +52,46 @@ class FileStore extends Component {
           });
         
         this.getFilesData();
+    }    
+
+    s3fileupload(){
+        const formData = new FormData();
+        formData.append('file', this.file);
+        const options = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+        delete options.headers['Content-Type'];
+
+        fetch('http://localhost:4001/api/fileupload', options)
+        .then(response => {
+            return response.json();
+          }).then(jsonResponse => {
+            console.log(jsonResponse.imageUrl);
+            this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName, this.state.description);
+          }).catch (error => {
+            console.log(error)
+          })
+    }
+    getFilesData() {
+        fileServices.getFilesData().then(filesdata =>{            
+            this.setState({filesdata: filesdata})
+        });
+    }
+    
+    storefiledata(imageurl, filename, description){
+        fileServices.storefiledata(imageurl, filename, description).
+        then(response => {
+            console.log(response);
+            this.getFilesData();
+            this.setState({
+                file: null,
+                description: ""
+            })
+        });
     }
     
     deleteFile(fileId, fileName){
