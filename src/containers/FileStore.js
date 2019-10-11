@@ -4,6 +4,7 @@ import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import "./FileStore.css";
 import cognitoUtils from '../Utilities/CognitoDetails'
+import appconfig from '../Config/appconfig'
 
 const uuidv4 = require('uuid/v4');
 
@@ -145,6 +146,25 @@ class FileStore extends Component {
             })
           );
     }
+    fileDownload(fileName){
+        const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
+        console.log(filePath);
+        //window.open(filePath, "_blank")
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", filePath, true);
+        xhr.responseType = "blob";
+        xhr.onload = function(){
+            var urlCreator = window.URL || window.webkitURL;
+            var imageUrl = urlCreator.createObjectURL(this.response);
+            var tag = document.createElement('a');
+            tag.href = imageUrl;
+            tag.download = fileName;
+            document.body.appendChild(tag);
+            tag.click();
+            document.body.removeChild(tag);
+        }
+        xhr.send();
+    }
     render() {
 
         const columns=[
@@ -176,7 +196,9 @@ class FileStore extends Component {
                 Header: "Action",
                 Cell: props =>{
                     return(
-                        <a href="https://cloudstoragebucket1.s3.us-east-2.amazonaws.com/rose_bud_orange_125198_168x300.jpg">Download!</a>
+                        <button type="submit" onClick={()=> this.fileDownload(props.original.FileName)
+                        }>Download!</button>
+                        //<a target="_blank" role="button" href="${appConfig.cloudFrontDomainName}/{props.original.FileName}" download>Download!</a>
                     )
                 }
             },
