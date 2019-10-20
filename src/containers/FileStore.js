@@ -16,7 +16,9 @@ class FileStore extends Component {
             description: "",
             props: [],
             apiResponse: "",
-            isUserAdmin: false
+            isUserAdmin: false,
+            userName:"",
+            userEmail:""
         };
     }      
     handleFileChange = event => {
@@ -33,11 +35,18 @@ class FileStore extends Component {
     }
     componentDidMount(){
         this.props.userHasLoggedIn(true);
+        
         var curUrl = window.location.href;
         cognitoUtils.parseCognitoWebResponse(curUrl).then((result) => {
-            console.log("web response ::",result); // "Stuff worked!"
+            //console.log("web response ::",result); // "Stuff worked!"
             cognitoUtils.getCognitoSession().then((result) => {
-                console.log(result.user.userName);
+                console.log("set1", result.user.email);
+                this.setState({
+                    userName: result.user.userName,
+                    userEmail: result.user.email
+                },function(){
+                    this.getFilesData();
+                })
                 const grp=result.user.groups;
                 if(grp){            
                     if(grp.includes("AdminGroup")){
@@ -48,11 +57,10 @@ class FileStore extends Component {
                 }
             });   
           }, function(err) {
-            console.log(err); // Error: "It broke"
+            console.log(err);
           });
-        
-        this.getFilesData();
     }    
+         
 
     s3fileupload(){
         const formData = new FormData();
@@ -71,20 +79,20 @@ class FileStore extends Component {
             return response.json();
           }).then(jsonResponse => {
             console.log(jsonResponse.imageUrl);
-            this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName, this.state.description);
+            this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName, this.state.userName, this.state.userEmail, this.state.description);
           }).catch (error => {
             console.log(error)
           })
     }
     getFilesData() {
-        fileServices.getFilesData().then(filesdata =>{            
+        fileServices.getFilesData(this.state.userEmail).then(filesdata =>{            
             this.setState({filesdata: filesdata})
         });
     }
     
-    storefiledata(imageurl, filename, description){
-        fileServices.storefiledata(imageurl, filename, description).
-        then(response => {
+    storefiledata(imageurl, filename, username, email, description){
+        fileServices.storefiledata(imageurl, filename, username, email, description)
+        .then(response => {
             console.log(response);
             this.getFilesData();
             this.setState({
@@ -95,31 +103,16 @@ class FileStore extends Component {
     }
     
     deleteFile(fileId, fileName){
-        console.log("fileId to be deleted" , fileName);
-        const url="http://localhost:4001/api/filedelete";
-        fetch(url, {
-            method: 'Post',
-            body: JSON.stringify({
-                "fileName": fileName
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-              }
-        }).then(response => {
+        fileServices.deleteFile(fileId, fileName)
+        .then(response => {
             this.deleteFileData(fileId);
-
-        });
+        })
     }
     deleteFileData(fileId){
-        return fetch('http://localhost:4001/deletefiledata' + '/' + fileId, {
-            method: 'delete'
-          }).then(response =>
-            response.json().then(json => {
-                console.log(json);
-                this.getFilesData();
-              return json;
-            })
-          );
+        fileServices.deleteFileData(fileId)
+        .then(res =>{
+            this.getFilesData();
+        })
     }
     fileDownload(fileName){
         const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
@@ -145,11 +138,11 @@ class FileStore extends Component {
         const columns=[
             {
                 Header: "User Name",
-                accessor: "Email"
+                accessor: "UserName"
             },
             {
                 Header: "User Email",
-                accessor: "Imageurl"
+                accessor: "Email"
             },
             {
                 Header: "File Name",
@@ -172,7 +165,7 @@ class FileStore extends Component {
                 Cell: props =>{
                     return(
                         <button type="submit" onClick={()=> this.fileDownload(props.original.FileName)
-                        }>Download!</button>
+                        }>Download</button>
                         //<a target="_blank" role="button" href="${appConfig.cloudFrontDomainName}/{props.original.FileName}" download>Download!</a>
                     )
                 }

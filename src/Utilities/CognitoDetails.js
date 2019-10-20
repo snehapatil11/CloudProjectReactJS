@@ -50,7 +50,9 @@ const parseCognitoWebResponse = (href) => {
         resolve(result)
       },
       onFailure: function (err) {
-        reject(new Error('Failure parsing Cognito web response: ' + err))
+        var res = localStorage.getItem("result");
+        resolve(res);
+        //reject(new Error('Failure parsing Cognito web response: ' + err))
       }
     }
     auth.parseCognitoWebResponse(href)

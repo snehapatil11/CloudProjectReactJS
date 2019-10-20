@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import "./Home.css";
+import appconfig from '../Config/appconfig'
+import { fileServices } from '../services/fileServices'
+
 
 class AdminPanel extends Component {
     constructor(props) {
@@ -9,17 +12,48 @@ class AdminPanel extends Component {
         this.state = {
             filesdata:[]
         };
-    }
+    }    
     
+    componentDidMount(){
+        this.getFilesData();
+    }
     getFilesData() {
-        fetch("http://localhost:4001/users")
+        fetch("http://localhost:4001/allusers")
         .then(response => response.json().then(filesdata =>{            
             this.setState({filesdata: filesdata})
             }));
-    }
-    componentDidMount(){
-        this.getFilesData();
     }      
+    fileDownload(fileName){
+        const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
+        console.log(filePath);
+        //window.open(filePath, "_blank")
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", filePath, true);
+        xhr.responseType = "blob";
+        xhr.onload = function(){
+            var urlCreator = window.URL || window.webkitURL;
+            var imageUrl = urlCreator.createObjectURL(this.response);
+            var tag = document.createElement('a');
+            tag.href = imageUrl;
+            tag.download = fileName;
+            document.body.appendChild(tag);
+            tag.click();
+            document.body.removeChild(tag);
+        }
+        xhr.send();
+    }
+    deleteFile(fileId, fileName){
+        fileServices.deleteFile(fileId, fileName)
+        .then(response => {
+            this.deleteFileData(fileId);
+        })
+    }
+    deleteFileData(fileId){
+        fileServices.deleteFileData(fileId)
+        .then(res =>{
+            this.getFilesData();
+        })
+    }
     render() {
       const columns=[
           {
@@ -47,25 +81,27 @@ class AdminPanel extends Component {
               accessor: "UpdatedAt"
           },
           {
-              Header: "Action",
-              Cell: props =>{
-                  return(
-                      <a href="https://cloudstoragebucket1.s3.us-east-2.amazonaws.com/rose_bud_orange_125198_168x300.jpg">Download!</a>
-                  )
-              }
-          },
-          {
-              Header: "Action",
-              Cell: props =>{
-                  return(
-                      <button 
-                      onClick={()=>
-                      this.deleteFile(props.original.Id, props.original.FileName)
-                      //this.deleteFileData(props.original.id, props.original.Email)
-                      }>Delete</button>
-                  )
-              }
-          }
+            Header: "Action",
+            Cell: props =>{
+                return(
+                    <button type="submit" onClick={()=> this.fileDownload(props.original.FileName)
+                    }>Download</button>
+                    //<a target="_blank" role="button" href="${appConfig.cloudFrontDomainName}/{props.original.FileName}" download>Download!</a>
+                )
+            }
+        },
+        {
+            Header: "Action",
+            Cell: props =>{
+                return(
+                    <button 
+                    onClick={()=>
+                    this.deleteFile(props.original.Id, props.original.FileName)
+                    //this.deleteFileData(props.original.id, props.original.Email)
+                    }>Delete</button>
+                )
+            }
+        }
       ];
     return (
       <div className="FileStore">        
