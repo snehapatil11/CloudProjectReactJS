@@ -1,4 +1,3 @@
-import appconfig from '../Config/appconfig'
 const uuidv4 = require('uuid/v4');
 
 export const fileServices  = {
@@ -10,6 +9,7 @@ export const fileServices  = {
 
 function getFilesData(email) 
 {
+    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
     return fetch(`${appconfig.endPointUrl}/users/`+ email)
     .then(response => {
         return response.json()
@@ -18,6 +18,7 @@ function getFilesData(email)
 
 function storefiledata(imageurl, filename, username, email, description){
 
+    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
     const url=`${appconfig.endPointUrl}/postusers`;
     return fetch(url, {
             method: 'Post',
@@ -38,6 +39,7 @@ function storefiledata(imageurl, filename, username, email, description){
 }
 
 function deleteFile(fileId, fileName){
+    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
     const url=`${appconfig.endPointUrl}/api/filedelete`;
     return fetch(url, {
         method: 'Post',
@@ -53,6 +55,7 @@ function deleteFile(fileId, fileName){
 }
 
 function deleteFileData(fileId){
+    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
     const url = `${appconfig.endPointUrl}/deletefiledata/` + fileId;
     return fetch(url, {
         method: 'delete'

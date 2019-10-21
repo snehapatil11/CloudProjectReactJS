@@ -10,18 +10,24 @@ const getCognitoDetails = () => {
   fetch("http://localhost:4001/cognitodetails")
   .then(response => response.json().then(appConfig =>{
     appConfig = appConfig;
+    console.log(appConfig);
     localStorage.setItem("appConfig",JSON.stringify(appConfig));
   }))        
 }
 // Creates a CognitoAuth instance
 const createCognitoAuth = () => {
   var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  var token = [
+    "openid",
+    "email",
+    "profile"
+]
   const appWebDomain = appConfig.userPoolBaseUri.replace('https://', '').replace('http://', '')
   const auth = new CognitoAuth({
     UserPoolId: appConfig.userPool,
     ClientId: appConfig.clientId,
     AppWebDomain: appWebDomain,
-    TokenScopesArray: appConfig.tokenScopes,
+    TokenScopesArray: token,
     RedirectUriSignIn: appConfig.callbackUri,
     RedirectUriSignOut: appConfig.signoutUri
   })
