@@ -1,12 +1,21 @@
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth'
 import { CognitoUserPool } from 'amazon-cognito-identity-js'
 import { config as AWSConfig } from 'aws-sdk'
-import appConfig from '../Config/appconfig.json'
+//import appConfig from '../Config/appconfig.json'
+//const appConfig = {}
 
-AWSConfig.region = appConfig.region
+AWSConfig.region = "us-east-2";
 
+const getCognitoDetails = () => {
+  fetch("http://localhost:4001/cognitodetails")
+  .then(response => response.json().then(appConfig =>{
+    appConfig = appConfig;
+    localStorage.setItem("appConfig",JSON.stringify(appConfig));
+  }))        
+}
 // Creates a CognitoAuth instance
 const createCognitoAuth = () => {
+  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
   const appWebDomain = appConfig.userPoolBaseUri.replace('https://', '').replace('http://', '')
   const auth = new CognitoAuth({
     UserPoolId: appConfig.userPool,
@@ -26,13 +35,18 @@ const createCognitoUser = () => {
 }
 
 // Creates a CognitoUserPool instance
-const createCognitoUserPool = () => new CognitoUserPool({
-  UserPoolId: appConfig.userPool,
-  ClientId: appConfig.clientId
-})
+const createCognitoUserPool = () => {
+  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  return new CognitoUserPool({  
+    UserPoolId: appConfig.userPool,
+    ClientId: appConfig.clientId
+  })
+}
 
 // Get the URI of the hosted sign in screen
 const getCognitoSignInUri = () => {
+  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  console.log("in geturi",appConfig.userPoolBaseUri);
   const signinUri = `${appConfig.userPoolBaseUri}/login?response_type=code&client_id=${appConfig.clientId}&redirect_uri=${appConfig.callbackUri}`
   return signinUri
 }
@@ -96,6 +110,7 @@ const signOutCognitoSession = () => {
 }
 
 export default {
+  getCognitoDetails,
   createCognitoAuth,
   createCognitoUser,
   createCognitoUserPool,

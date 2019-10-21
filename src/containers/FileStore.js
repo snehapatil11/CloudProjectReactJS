@@ -4,7 +4,7 @@ import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import "./FileStore.css";
 import cognitoUtils from '../Utilities/CognitoDetails'
-import appconfig from '../Config/appconfig'
+//import appconfig from '../Config/appconfig'
 import { fileServices } from '../services/fileServices'
 
 class FileStore extends Component {
@@ -115,6 +115,7 @@ class FileStore extends Component {
         })
     }
     fileDownload(fileName){
+        var appconfig = JSON.parse(localStorage.getItem("appConfig"));
         const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
         console.log(filePath);
         //window.open(filePath, "_blank")

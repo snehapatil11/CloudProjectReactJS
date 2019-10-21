@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import "./Home.css";
-import appconfig from '../Config/appconfig'
+//import appconfig from '../Config/appconfig'
 import { fileServices } from '../services/fileServices'
 
 
@@ -24,6 +24,7 @@ class AdminPanel extends Component {
             }));
     }      
     fileDownload(fileName){
+        var appconfig = JSON.parse(localStorage.getItem("appConfig"));
         const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
         console.log(filePath);
         //window.open(filePath, "_blank")

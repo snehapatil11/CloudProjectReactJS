@@ -22,6 +22,10 @@ class App extends Component {
     e.preventDefault()
     cognitoUtils.signOutCognitoSession()
   }
+
+  componentDidMount(){
+    cognitoUtils.getCognitoDetails();
+  }
   
   render() {
 
