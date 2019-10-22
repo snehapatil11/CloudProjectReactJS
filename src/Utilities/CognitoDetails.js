@@ -2,34 +2,35 @@ import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth'
 import { CognitoUserPool } from 'amazon-cognito-identity-js'
 import { config as AWSConfig } from 'aws-sdk'
 //import appConfig from '../Config/appconfig.json'
-//const appConfig = {}
 
 AWSConfig.region = "us-east-2";
+
+console.log("client id", process.env.REACT_APP_region);
 
 const getCognitoDetails = () => {
   fetch("http://localhost:4001/cognitodetails")
   .then(response => response.json().then(appConfig =>{
     appConfig = appConfig;
     console.log(appConfig);
-    localStorage.setItem("appConfig",JSON.stringify(appConfig));
+    //localStorage.setItem("appConfig",JSON.stringify(appConfig));
   }))        
 }
 // Creates a CognitoAuth instance
 const createCognitoAuth = () => {
-  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
   var token = [
     "openid",
     "email",
     "profile"
 ]
-  const appWebDomain = appConfig.userPoolBaseUri.replace('https://', '').replace('http://', '')
+  const appWebDomain = process.env.REACT_APP_userPoolBaseUri.replace('https://', '').replace('http://', '')
   const auth = new CognitoAuth({
-    UserPoolId: appConfig.userPool,
-    ClientId: appConfig.clientId,
+    UserPoolId: process.env.REACT_APP_userPool,
+    ClientId: process.env.REACT_APP_clientId,
     AppWebDomain: appWebDomain,
     TokenScopesArray: token,
-    RedirectUriSignIn: appConfig.callbackUri,
-    RedirectUriSignOut: appConfig.signoutUri
+    RedirectUriSignIn: process.env.REACT_APP_callbackUri,
+    RedirectUriSignOut: process.env.REACT_APP_signoutUri
   })
   return auth
 }
@@ -42,18 +43,18 @@ const createCognitoUser = () => {
 
 // Creates a CognitoUserPool instance
 const createCognitoUserPool = () => {
-  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
   return new CognitoUserPool({  
-    UserPoolId: appConfig.userPool,
-    ClientId: appConfig.clientId
+    UserPoolId: process.env.REACT_APP_userPool,
+    ClientId: process.env.REACT_APP_clientId
   })
 }
 
 // Get the URI of the hosted sign in screen
 const getCognitoSignInUri = () => {
-  var appConfig = JSON.parse(localStorage.getItem("appConfig"));
-  console.log("in geturi",appConfig.userPoolBaseUri);
-  const signinUri = `${appConfig.userPoolBaseUri}/login?response_type=code&client_id=${appConfig.clientId}&redirect_uri=${appConfig.callbackUri}`
+  //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
+  console.log("in geturi",process.env.REACT_APP_userPoolBaseUri);
+  const signinUri = `${process.env.REACT_APP_userPoolBaseUri}/login?response_type=code&client_id=${process.env.REACT_APP_clientId}&redirect_uri=${process.env.REACT_APP_callbackUri}`
   return signinUri
 }
 

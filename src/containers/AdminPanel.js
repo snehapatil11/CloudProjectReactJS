@@ -24,8 +24,8 @@ class AdminPanel extends Component {
             }));
     }      
     fileDownload(fileName){
-        var appconfig = JSON.parse(localStorage.getItem("appConfig"));
-        const filePath = appconfig.cloudFrontDomainName + '/' + fileName;
+        //var appconfig = JSON.parse(localStorage.getItem("appConfig"));
+        const filePath = process.env.REACT_APP_cloudFrontDomainName + '/' + fileName;
         console.log(filePath);
         //window.open(filePath, "_blank")
         var xhr = new XMLHttpRequest();
@@ -59,11 +59,11 @@ class AdminPanel extends Component {
       const columns=[
           {
               Header: "User Name",
-              accessor: "Email"
+              accessor: "UserName"
           },
           {
               Header: "User Email",
-              accessor: "Imageurl"
+              accessor: "Email"
           },
           {
               Header: "File Name",

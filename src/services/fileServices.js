@@ -9,8 +9,7 @@ export const fileServices  = {
 
 function getFilesData(email) 
 {
-    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
-    return fetch(`${appconfig.endPointUrl}/users/`+ email)
+    return fetch(`${process.env.REACT_APP_endPointUrl}/users/`+ email)
     .then(response => {
         return response.json()
     })    
@@ -18,8 +17,7 @@ function getFilesData(email)
 
 function storefiledata(imageurl, filename, username, email, description){
 
-    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
-    const url=`${appconfig.endPointUrl}/postusers`;
+    const url=`${process.env.REACT_APP_endPointUrl}/postusers`;
     return fetch(url, {
             method: 'Post',
             body: JSON.stringify({
@@ -39,8 +37,7 @@ function storefiledata(imageurl, filename, username, email, description){
 }
 
 function deleteFile(fileId, fileName){
-    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
-    const url=`${appconfig.endPointUrl}/api/filedelete`;
+    const url=`${process.env.REACT_APP_endPointUrl}/api/filedelete`;
     return fetch(url, {
         method: 'Post',
         body: JSON.stringify({
@@ -55,8 +52,7 @@ function deleteFile(fileId, fileName){
 }
 
 function deleteFileData(fileId){
-    var appconfig = JSON.parse(localStorage.getItem("appConfig"));
-    const url = `${appconfig.endPointUrl}/deletefiledata/` + fileId;
+    const url = `${process.env.REACT_APP_endPointUrl}/deletefiledata/` + fileId;
     return fetch(url, {
         method: 'delete'
         }).then(response =>{
