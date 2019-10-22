@@ -2,7 +2,9 @@ const uuidv4 = require('uuid/v4');
 
 export const fileServices  = {
     getFilesData,
+    getFile,
     storefiledata,
+    updateFileData,
     deleteFile,
     deleteFileData
 }
@@ -13,6 +15,23 @@ function getFilesData(email)
     .then(response => {
         return response.json()
     })    
+}
+
+function getFile(filename) 
+{
+    return fetch(`${process.env.REACT_APP_endPointUrl}/file/`+ filename)
+    .then(response => {
+        return response.json()
+    })    
+}
+
+function updateFileData(fileId){
+    //var time = new Date().toDateString() + " " + new Date().toLocaleTimeString();
+    
+    return fetch(`${process.env.REACT_APP_endPointUrl}/updatefiledata/`+fileId)
+    .then(response => {
+        return response.json()
+    })
 }
 
 function storefiledata(imageurl, filename, username, email, description){

@@ -78,16 +78,38 @@ class FileStore extends Component {
         .then(response => {
             return response.json();
           }).then(jsonResponse => {
-            console.log(jsonResponse.imageUrl);
-            this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName, this.state.userName, this.state.userEmail, this.state.description);
+            this.getFile(jsonResponse.imageUrl,jsonResponse.fileName, this.state.userName, this.state.userEmail, this.state.description);
+            //this.storefiledata(jsonResponse.imageUrl,jsonResponse.fileName, this.state.userName, this.state.userEmail, this.state.description);
           }).catch (error => {
             console.log(error)
           })
     }
     getFilesData() {
-        fileServices.getFilesData(this.state.userEmail).then(filesdata =>{    
-            console.log(filesdata);        
+        fileServices.getFilesData(this.state.userEmail).then(filesdata =>{ 
             this.setState({filesdata: filesdata})
+        });
+    }
+    getFile(imageUrl,fileName, userName, userEmail, description){
+        fileServices.getFile(fileName).then(filedata =>{ 
+            console.log(filedata);   
+            if(filedata.length > 0){
+                this.updateFileData(filedata[0].Id);
+            }
+            else
+            {
+                console.log("in storefile data");
+                this.storefiledata(imageUrl,fileName, userName, userEmail, description);
+            }
+        });
+    }
+    updateFileData(fileId){
+        fileServices.updateFileData(fileId).then(updatefiledata =>{ 
+            console.log("updatefiledata",updatefiledata); 
+            this.getFilesData();
+            this.setState({
+                file: null,
+                description: ""
+            })
         });
     }
     
