@@ -18,7 +18,7 @@ class AdminPanel extends Component {
         this.getFilesData();
     }
     getFilesData() {
-        fetch("http://localhost:4001/allusers")
+        fetch(`${process.env.REACT_APP_endPointUrl}/allusers`)
         .then(response => response.json().then(filesdata =>{            
             this.setState({filesdata: filesdata})
             }));

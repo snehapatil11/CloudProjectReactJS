@@ -74,7 +74,7 @@ class FileStore extends Component {
         };
         delete options.headers['Content-Type'];
 
-        fetch('http://localhost:4001/api/fileupload', options)
+        fetch(`${process.env.REACT_APP_endPointUrl}/api/fileupload`, options)
         .then(response => {
             return response.json();
           }).then(jsonResponse => {

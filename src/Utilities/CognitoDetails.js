@@ -5,24 +5,13 @@ import { config as AWSConfig } from 'aws-sdk'
 
 AWSConfig.region = "us-east-2";
 
-console.log("client id", process.env.REACT_APP_region);
-
-const getCognitoDetails = () => {
-  fetch("http://localhost:4001/cognitodetails")
-  .then(response => response.json().then(appConfig =>{
-    appConfig = appConfig;
-    console.log(appConfig);
-    //localStorage.setItem("appConfig",JSON.stringify(appConfig));
-  }))        
-}
-// Creates a CognitoAuth instance
 const createCognitoAuth = () => {
   //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
   var token = [
     "openid",
     "email",
     "profile"
-]
+  ]
   const appWebDomain = process.env.REACT_APP_userPoolBaseUri.replace('https://', '').replace('http://', '')
   const auth = new CognitoAuth({
     UserPoolId: process.env.REACT_APP_userPool,
@@ -35,13 +24,13 @@ const createCognitoAuth = () => {
   return auth
 }
 
-// Creates a CognitoUser instance
+// Creates Cognito User
 const createCognitoUser = () => {
-  const pool = createCognitoUserPool()
-  return pool.getCurrentUser()
+  const userpool = createCognitoUserPool()
+  return userpool.getCurrentUser()
 }
 
-// Creates a CognitoUserPool instance
+// Creates Cognito UserPool
 const createCognitoUserPool = () => {
   //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
   return new CognitoUserPool({  
@@ -50,15 +39,13 @@ const createCognitoUserPool = () => {
   })
 }
 
-// Get the URI of the hosted sign in screen
 const getCognitoSignInUri = () => {
   //var appConfig = JSON.parse(localStorage.getItem("appConfig"));
-  console.log("in geturi",process.env.REACT_APP_userPoolBaseUri);
+  console.log("in geturi",process.env.REACT_APP_callbackUri);
   const signinUri = `${process.env.REACT_APP_userPoolBaseUri}/login?response_type=code&client_id=${process.env.REACT_APP_clientId}&redirect_uri=${process.env.REACT_APP_callbackUri}`
   return signinUri
 }
 
-// Parse the response from a Cognito callback URI (assumed a token or code is in the supplied href). Returns a promise.
 const parseCognitoWebResponse = (href) => {
   return new Promise((resolve, reject) => {
     const auth = createCognitoAuth()
@@ -81,7 +68,6 @@ const parseCognitoWebResponse = (href) => {
   })
 }
 
-// Gets a new Cognito session. Returns a promise.
 const getCognitoSession = () => {
   return new Promise((resolve, reject) => {
     const cognitoUser = createCognitoUser()
@@ -90,9 +76,6 @@ const getCognitoSession = () => {
         reject(new Error('Failure getting Cognito session: ' + err))
         return
       }
-
-      // Resolve the promise with the session credentials
-      //console.log('Successfully got session: ' + JSON.stringify(result))
       const session = {
         credentials: {
           accessToken: result.accessToken.jwtToken,
@@ -110,14 +93,12 @@ const getCognitoSession = () => {
   })
 }
 
-// Sign out of the current session (will redirect to signout URI)
 const signOutCognitoSession = () => {
   const auth = createCognitoAuth()
   auth.signOut()
 }
 
 export default {
-  getCognitoDetails,
   createCognitoAuth,
   createCognitoUser,
   createCognitoUserPool,
