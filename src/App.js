@@ -23,10 +23,6 @@ class App extends Component {
     cognitoUtils.signOutCognitoSession()
   }
 
-  componentDidMount(){
-    cognitoUtils.getCognitoDetails();
-  }
-  
   render() {
 
   const childProps = {
