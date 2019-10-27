@@ -1,5 +1,6 @@
-#Project Report
-#Please Refer Project1Report.pdf
+
+## Project Report
+### `Please Refer Project1Report.pdf`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
