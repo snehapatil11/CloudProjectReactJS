@@ -1,10 +1,10 @@
 
 ## StorePot: One Stop Storage Solution
 
-University Name: http://www.sjsu.edu/
-Course: CMPE 281 - Cloud Technologies
-Professor: Sanjay Garje
-ISA: Rajalakshmi Babu
+University Name: http://www.sjsu.edu/  
+Course: CMPE 281 - Cloud Technologies  
+Professor: Sanjay Garje  
+ISA: Rajalakshmi Babu  
 Student: Sneha Patil (SJSU Id: 013942006)
 
 ## Demo URL:  
