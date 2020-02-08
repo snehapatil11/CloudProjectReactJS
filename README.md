@@ -8,7 +8,7 @@ Professor: Sanjay Garje
 ISA: Rajalakshmi Babu
 Student: Sneha Patil (SJSU Id: 013942006)
 
-### `npm start`
+## Demo URL: https://drive.google.com/drive/folders/1RjdmSaOzetw9V9pIphjkqXIIdw8xr27O?usp=sharing
 
 ## Introduction
 
@@ -23,7 +23,7 @@ StorePot is a 3tier web application hosted on AWS cloud which intend to provide 
 
 ## Solution Architecture
 
-TODO: Write usage instructions
+![Picture1](https://user-images.githubusercontent.com/27798889/74080787-a2321980-49fc-11ea-9cad-0c04232892ce.png)
 
 ## StorePot Features
 
